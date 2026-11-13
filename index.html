@@ -19,7 +19,7 @@
 html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5}
 a{color:var(--acc)}
-header{position:sticky;top:0;z-index:20;background:var(--acc);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px}
+header{background:var(--acc);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px}
 header .ttl{font-weight:700;font-size:17px;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:baseline}
 header .ttl small{font-weight:400;font-size:12px;opacity:.85}
 nav.days{display:flex;gap:6px;margin-top:8px}
@@ -71,8 +71,13 @@ li{margin:3px 0}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px;margin:6px 0}
 .kv dt{color:var(--sub)} .kv dd{margin:0;font-weight:600}
 .off{font-size:12px;color:var(--sub);text-align:center;margin:6px 0 10px}
-.snapbtn{display:block;text-align:center;background:#0d5c4d;color:#fff;font-weight:700;font-size:15px;padding:12px 10px;border-radius:10px;margin:8px 0 12px;text-decoration:none}
-.mapbtn{display:block;text-align:center;background:#1d6fb8;color:#fff;font-weight:700;font-size:15px;padding:12px 10px;border-radius:10px;margin:8px 0 12px;text-decoration:none}
+.fab{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:30;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.9);font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.16);cursor:pointer;padding:0}
+.fabpanel{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom) + 72px);z-index:30;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.22);padding:6px;min-width:216px;display:none}
+.fabpanel.open{display:block}
+.fabpanel .pitem{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:11px 10px;font-size:15px;color:var(--ink);text-decoration:none;cursor:pointer;font-family:inherit}
+.fabpanel .pitem.nb{border-bottom:0}
+.fabpanel .pj{font-size:12px;color:var(--sub);padding:8px 10px 0}
+.foot details{text-align:left}
 </style>
 </head>
 <body>
@@ -86,13 +91,8 @@ li{margin:3px 0}
   </nav>
 </header>
 <main>
-<p class="off">一度開けばオフラインでも全内容が見られます。原典の事実部分の写しも<a href="./sources.html">こちらに保存</a>してあり、オフラインで照合できます（原文リンクのみ通信が必要）。情報は2026-11-13確認。<br><a href="./map.html">🗺 地図（現在地と見比べる）</a>※地図だけオンライン専用</p>
-<a class="snapbtn" href="https://osaka-trip-snapshots.pages.dev/" target="_blank" rel="noopener">📚 原典スナップショット集（公式ページそのまま・要ログイン）→</a>
-<a class="mapbtn" href="./map.html">🗺 地図ページ（現在地・寄り道・2地点の所要時間）→</a>
-
 <!-- ================= 11/14 ================= -->
 <section class="day active" id="d14">
-  <p class="off"><a href="./map.html">🗺 地図で寄り道を探す</a>（地図はオンライン専用）</p>
   <div class="wx"><div class="big">☁️ 21°/13°</div><div class="d">曇・降水30%。崩れるのは夜から。昼の屋外は無事な日。<br>海遊館 9:30–20:00 ／ 宿：ホテル近鉄ユニバーサル・シティ</div></div>
 
   <div class="card">
@@ -337,7 +337,6 @@ li{margin:3px 0}
 
 <!-- ================= 11/16 ================= -->
 <section class="day" id="d16">
-  <p class="off"><a href="./map.html">🗺 地図で寄り道を探す</a>（地図はオンライン専用）</p>
   <div class="wx"><div class="big">🌤 20°/15°</div><div class="d">晴れのち曇・降水20%。回復する日。<br>チェックアウト11:00 ／ 復路 NH767 14:45発</div></div>
 
   <div class="card">
@@ -447,7 +446,11 @@ li{margin:3px 0}
   </div>
 </section>
 
-<p class="foot">出典は各カードの「原典」リンク。運航・営業は天候等で変わります。オンラインの時に原典で最終確認を。<br><a href="./sources.html">原典の写し（オフライン用）</a>｜<a href="https://osaka-trip-snapshots.pages.dev/" target="_blank" rel="noopener">原典スナップショット集</a>｜作成 2026-11-13</p>
+<p class="foot">出典は各カードの「原典」リンク。運航・営業は天候等で変わります。オンラインの時に原典で最終確認を。<br>作成 2026-11-13</p>
+<details>
+  <summary>このサイトについて（オフライン・原典について）</summary>
+  <p style="font-size:13px">一度開けばオフラインでも全内容が見られます。原典の事実部分の写しも<a href="./sources.html">こちらに保存</a>してあり、オフラインで照合できます（原文リンクのみ通信が必要）。原典そのままの保存版（レイアウト・写真付き）は<a href="https://osaka-trip-snapshots.pages.dev/" target="_blank" rel="noopener">原典スナップショット集</a>（要ログイン：メールに届くコード）から開けます。情報は2026-11-13確認。地図ページはオンライン専用です。</p>
+</details>
 </main>
 <script>
 (function(){
@@ -471,6 +474,33 @@ li{margin:3px 0}
   if('serviceWorker' in navigator){
     window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
   }
+})();
+</script>
+<button class="fab" id="fabBtn" type="button" aria-label="リンクと日にち移動" aria-expanded="false">🧭</button>
+<div class="fabpanel" id="fabPanel">
+  <a class="pitem" href="./map.html">🗺 地図ページ</a>
+  <a class="pitem" href="https://osaka-trip-snapshots.pages.dev/" target="_blank" rel="noopener">📚 原典スナップショット集</a>
+  <a class="pitem" href="./sources.html">📄 原典の写し</a>
+  <div class="pj">日にちへ移動</div>
+  <button class="pitem" type="button" data-jump="d14">14 土</button>
+  <button class="pitem" type="button" data-jump="d15">15 日</button>
+  <button class="pitem" type="button" data-jump="d16">16 月</button>
+  <button class="pitem nb" type="button" data-jump="sos">SOS</button>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('fabBtn'), panel=document.getElementById('fabPanel');
+  function close(){panel.classList.remove('open');btn.setAttribute('aria-expanded','false')}
+  btn.addEventListener('click',function(ev){ev.stopPropagation();btn.setAttribute('aria-expanded',panel.classList.toggle('open')?'true':'false')});
+  document.addEventListener('click',function(ev){if(panel.classList.contains('open') && !panel.contains(ev.target)) close()});
+  panel.querySelectorAll('button[data-jump]').forEach(function(b){
+    b.addEventListener('click',function(){
+      close();
+      var t=document.querySelector('nav.days button[data-day="'+b.dataset.jump+'"]');
+      if(t) t.click();
+    });
+  });
+  panel.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close)});
 })();
 </script>
 </body>

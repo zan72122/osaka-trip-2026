@@ -12,17 +12,34 @@
 <style>
   html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
   #map{position:fixed;inset:0;background:#e8eef0}
+  /* 固定UIは3つまで: アンカー帯(上) / 現在地ボタン / メニューボタン(右下) */
   .band{position:fixed;top:0;left:0;right:0;z-index:1200;background:#0b4f6c;color:#fff;
-    font-size:13px;font-weight:700;line-height:1.35;padding:calc(env(safe-area-inset-top) + 6px) 10px 6px;text-align:center;
-    box-shadow:0 1px 6px rgba(0,0,0,.25)}
-  .band .sub{display:block;font-size:11px;font-weight:400;opacity:.85}
-  .backlink{position:fixed;left:10px;top:calc(env(safe-area-inset-top) + 90px);z-index:1200;
-    background:rgba(255,255,255,.94);color:#0b4f6c;text-decoration:none;font-size:13px;font-weight:700;
-    border-radius:999px;padding:7px 12px;box-shadow:0 1px 5px rgba(0,0,0,.3)}
-  .btns{position:fixed;right:10px;bottom:calc(env(safe-area-inset-bottom) + 16px);z-index:1200;display:flex;flex-direction:column;gap:8px}
-  .btns button{appearance:none;border:0;border-radius:999px;padding:9px 14px;font-size:14px;font-weight:700;
-    background:rgba(255,255,255,.94);color:#0b4f6c;box-shadow:0 1px 5px rgba(0,0,0,.3);cursor:pointer;text-align:left}
-  .btns button:active{background:#dcebf1}
+    font-size:12px;font-weight:700;line-height:1.3;padding:calc(env(safe-area-inset-top) + 4px) 10px 4px;text-align:center;
+    box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer;transition:opacity .25s ease}
+  .band .line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .band .detail{display:none;font-size:11px;font-weight:400;opacity:.9;white-space:normal;margin-top:2px}
+  .band.open .detail{display:block}
+  .band.open .line{white-space:normal}
+  .ctrls{position:fixed;right:10px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:1200;
+    display:flex;flex-direction:column;gap:8px;transition:opacity .25s ease}
+  .ctrls button{appearance:none;border:0;width:46px;height:46px;border-radius:50%;padding:0;
+    font-size:19px;line-height:1;background:rgba(255,255,255,.94);color:#0b4f6c;
+    box-shadow:0 1px 5px rgba(0,0,0,.3);cursor:pointer}
+  .ctrls button:active{background:#dcebf1}
+  #menuPanel{display:none;position:fixed;right:10px;bottom:calc(env(safe-area-inset-bottom) + 122px);z-index:1210;
+    background:rgba(255,255,255,.97);border-radius:14px;box-shadow:0 3px 14px rgba(0,0,0,.32);
+    padding:8px;width:196px;color:#12242c;transition:opacity .25s ease}
+  #menuPanel.open{display:block}
+  #menuPanel>button{display:block;width:100%;appearance:none;border:0;background:transparent;text-align:left;
+    font-size:14px;font-weight:700;color:#0b4f6c;padding:8px 8px;border-radius:8px;cursor:pointer}
+  #menuPanel>button:active{background:#eef6f8}
+  #menuPanel .mlabel{font-size:11px;font-weight:800;color:#5a6d75;padding:8px 8px 4px;border-top:1px solid #eef2f3;margin-top:4px}
+  #menuPanel .mchips{display:flex;flex-wrap:wrap;gap:5px;padding:0 6px 6px}
+  #menuPanel .mchips button{appearance:none;border:1px solid rgba(11,79,108,.35);border-radius:999px;
+    padding:4px 9px;font-size:12px;font-weight:700;background:#fff;color:#0b4f6c;cursor:pointer}
+  #menuPanel .mchips button.on{background:#0b4f6c;color:#fff}
+  #menuPanel a.back{display:block;font-size:13px;font-weight:700;color:#0b4f6c;text-decoration:none;
+    padding:8px;border-top:1px solid #eef2f3;margin-top:4px}
   .pin{width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);
     display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1;background:#0b4f6c}
   .pin.detour{background:#8a97a0}
@@ -38,67 +55,84 @@
     font-size:13px;font-weight:700;background:#eef6f8;color:#0b4f6c;cursor:pointer}
   .routebtns button:active{background:#cfe5ec}
   .routebtns button.set{background:#0b4f6c;color:#fff}
-  .chips{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 52px);z-index:1190;
-    display:flex;gap:6px;justify-content:center;padding:4px 8px;pointer-events:none}
-  .chips button{pointer-events:auto;appearance:none;border:1px solid rgba(11,79,108,.35);border-radius:999px;
-    padding:5px 11px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);color:#0b4f6c;
-    box-shadow:0 1px 4px rgba(0,0,0,.22);cursor:pointer}
-  .chips button.on{background:#0b4f6c;color:#fff}
+  /* ルートシート: 既定は1行サマリに折り畳み、タップで詳細を展開 */
   #routeSheet{position:fixed;left:0;right:0;bottom:0;z-index:1250;background:#fff;color:#12242c;
     border-radius:16px 16px 0 0;box-shadow:0 -3px 18px rgba(0,0,0,.35);
-    padding:12px 14px calc(env(safe-area-inset-bottom) + 12px);max-height:52vh;overflow-y:auto;
-    transform:translateY(110%);transition:transform .28s ease}
+    transform:translateY(110%);transition:transform .28s ease,opacity .25s ease}
   #routeSheet.open{transform:translateY(0)}
-  #routeSheet .rhead{font-weight:800;font-size:15px;line-height:1.45;margin:0 26px 8px 0}
-  #routeSheet .rrow{display:flex;gap:8px;align-items:baseline;padding:8px 8px;border-top:1px solid #e3ebee;border-radius:8px}
-  #routeSheet .rrow.tap{cursor:pointer}
-  #routeSheet .rrow.active{background:#eef6f8;outline:1px solid #0b4f6c}
-  #routeSheet .rrow .ic{font-size:16px;flex:0 0 auto}
-  #routeSheet .rrow .tx{font-size:13.5px;line-height:1.5}
-  #routeSheet .rrow .tx b{font-size:14.5px}
-  #routeSheet .rrow .est{color:#8a6d00;font-size:12px;font-weight:700}
-  #routeClose{position:absolute;top:8px;right:10px;appearance:none;border:0;background:#eef2f3;color:#333;
-    width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer}
-  #nearPanel{display:none;position:fixed;left:10px;top:calc(env(safe-area-inset-top) + 128px);z-index:1200;
+  #routeSummary{display:flex;align-items:center;gap:8px;padding:11px 12px calc(env(safe-area-inset-bottom) + 11px);
+    cursor:pointer;min-height:22px}
+  #routeSheet.expanded #routeSummary{padding-bottom:6px}
+  #routeSummaryText{flex:1;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #routeSummary .chev{font-size:12px;font-weight:700;color:#0b4f6c;flex:0 0 auto}
+  #routeClose{flex:0 0 auto;appearance:none;border:0;background:#eef2f3;color:#333;
+    width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;padding:0}
+  #routeDetail{display:none;max-height:46vh;overflow-y:auto;padding:0 14px calc(env(safe-area-inset-bottom) + 12px)}
+  #routeSheet.expanded #routeDetail{display:block}
+  #routeDetail .rhead{font-weight:800;font-size:15px;line-height:1.45;margin:2px 0 6px}
+  #routeDetail .rrow{display:flex;gap:8px;align-items:baseline;padding:8px 8px;border-top:1px solid #e3ebee;border-radius:8px}
+  #routeDetail .rrow.tap{cursor:pointer}
+  #routeDetail .rrow.active{background:#eef6f8;outline:1px solid #0b4f6c}
+  #routeDetail .rrow .ic{font-size:16px;flex:0 0 auto}
+  #routeDetail .rrow .tx{font-size:13.5px;line-height:1.5}
+  #routeDetail .rrow .tx b{font-size:14.5px}
+  #routeDetail .rrow .est{color:#8a6d00;font-size:12px;font-weight:700}
+  #nearPanel{display:none;position:fixed;left:10px;top:calc(env(safe-area-inset-top) + 42px);z-index:1200;
     background:rgba(255,255,255,.96);border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.3);
-    padding:9px 11px;max-width:70vw;color:#12242c}
-  #nearPanel .nh{font-size:12px;font-weight:800;color:#0b4f6c;margin-bottom:5px}
-  #nearPanel a{display:block;font-size:13.5px;color:#12242c;text-decoration:none;padding:4px 2px;border-top:1px solid #eef2f3}
+    padding:8px 10px;width:186px;max-width:56vw;color:#12242c;transition:opacity .25s ease}
+  #nearPanel .nh{font-size:12px;font-weight:800;color:#0b4f6c;margin-bottom:4px}
+  #nearPanel a{display:block;font-size:13px;color:#12242c;text-decoration:none;padding:4px 2px;border-top:1px solid #eef2f3}
   #nearPanel a b{color:#0b4f6c}
   #nearClose{position:absolute;top:4px;right:6px;appearance:none;border:0;background:transparent;font-size:14px;color:#666;cursor:pointer}
-  #toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 86px);
+  #toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 76px);
     z-index:1260;background:rgba(18,36,44,.92);color:#fff;font-size:13px;font-weight:700;border-radius:999px;
     padding:8px 14px;box-shadow:0 2px 8px rgba(0,0,0,.35);max-width:88vw;text-align:center}
   #fallback{display:none;position:fixed;inset:0;z-index:1300;background:#f4f7f8;color:#12242c;
     padding:80px 24px 24px;text-align:center;font-size:15px;line-height:1.7}
   #fallback a{color:#0b4f6c;font-weight:700}
-  #tilenote{display:none;position:fixed;left:10px;bottom:calc(env(safe-area-inset-bottom) + 16px);z-index:1200;max-width:62vw;
-    background:rgba(255,244,214,.96);color:#664d03;font-size:12px;border-radius:10px;padding:8px 10px;box-shadow:0 1px 5px rgba(0,0,0,.25)}
+  #tilenote{display:none;position:fixed;left:10px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:1200;max-width:56vw;
+    background:rgba(255,244,214,.96);color:#664d03;font-size:12px;border-radius:10px;padding:8px 10px;box-shadow:0 1px 5px rgba(0,0,0,.25);transition:opacity .25s ease}
+  /* 地図を操作している間は固定UI群を半透明にする */
+  body.fading .band,body.fading .ctrls,body.fading #menuPanel,
+  body.fading #nearPanel,body.fading #routeSheet,body.fading #tilenote{opacity:.35}
 </style>
 </head>
 <body>
 <div id="map"></div>
 
-<div class="band" id="anchorBand">固定予定：11/14 13:45 海遊館入館 ／ 11/16 12:15 USJ発バス</div>
-<div class="chips" id="chips">
-  <button type="button" data-f="all" class="on">全部</button>
-  <button type="button" data-f="trip">旅程</button>
-  <button type="button" data-f="detour">寄り道</button>
-  <button type="button" data-f="kids">子どもが喜ぶ</button>
+<div class="band" id="anchorBand" title="タップで詳細">
+  <div class="line" id="bandLine">⚓ 固定予定：11/14 13:45 海遊館入館 ／ 11/16 12:15 USJ発バス</div>
+  <div class="detail" id="bandDetail"></div>
 </div>
-<a class="backlink" href="./index.html">← 旅行サイトへ戻る</a>
-<div class="btns">
+<div class="ctrls">
+  <button id="btnLoc" type="button" title="現在地" aria-label="現在地">📍</button>
+  <button id="btnMenu" type="button" title="メニュー" aria-label="メニュー">☰</button>
+</div>
+<div id="menuPanel">
+  <button id="btnAll" type="button">🗺 全体を表示</button>
   <button id="btnDice" type="button">🎲 おまかせ</button>
-  <button id="btnLoc" type="button">📍 現在地</button>
-  <button id="btnAll" type="button">🗺 全体</button>
+  <div class="mlabel">🔍 絞り込み（選ぶと閉じます）</div>
+  <div class="mchips" id="chips">
+    <button type="button" data-f="all" class="on">全部</button>
+    <button type="button" data-f="trip">旅程</button>
+    <button type="button" data-f="detour">寄り道</button>
+    <button type="button" data-f="kids">子どもが喜ぶ</button>
+  </div>
+  <a class="back" href="./index.html">← 旅行サイトへ戻る</a>
 </div>
 <div id="tilenote">地図タイルを読み込めませんでした。地図はオンライン専用です。</div>
 <div id="nearPanel"><button id="nearClose" type="button" aria-label="閉じる">✕</button><div class="nh">📍 現在地から近い順</div><div id="nearList"></div></div>
 <div id="toast"></div>
 <div id="routeSheet">
-  <button id="routeClose" type="button" aria-label="閉じる">✕</button>
-  <div class="rhead" id="routeTitle"></div>
-  <div id="routeBody"></div>
+  <div id="routeSummary">
+    <span id="routeSummaryText">⏳ 計算中…</span>
+    <span class="chev" id="routeChev">詳細 ▸</span>
+    <button id="routeClose" type="button" aria-label="ルートを消す">✕</button>
+  </div>
+  <div id="routeDetail">
+    <div class="rhead" id="routeTitle"></div>
+    <div id="routeBody"></div>
+  </div>
 </div>
 
 <div id="fallback">
@@ -116,10 +150,10 @@
     return;
   }
 
-  /* ===== 固定アンカー帯 ===== */
+  /* ===== 固定アンカー帯（常時は1行、タップで詳細を展開） ===== */
   var ANCHORS = [
-    { t: new Date(2026, 10, 14, 13, 45), label: "11/14 13:45 海遊館入館" },
-    { t: new Date(2026, 10, 16, 12, 15), label: "11/16 12:15 USJ発リムジンバス（13:00発が最終の安全圏）" }
+    { t: new Date(2026, 10, 14, 13, 45), short: "11/14 13:45 海遊館入館", label: "11/14 13:45 海遊館入館（eチケット購入済み）" },
+    { t: new Date(2026, 10, 16, 12, 15), short: "11/16 12:15 USJ発バス", label: "11/16 12:15 USJ発リムジンバス（13:00発が最終の安全圏）" }
   ];
   function fmtRemain(ms) {
     var m = Math.max(0, Math.round(ms / 60000));
@@ -129,20 +163,27 @@
     return "あと" + mm + "分";
   }
   function updateBand() {
-    var now = new Date(), band = document.getElementById("anchorBand"), next = null;
-    for (var i = 0; i < ANCHORS.length; i++) { if (now < ANCHORS[i].t) { next = ANCHORS[i]; break; } }
+    var now = new Date(), next = null, nextIdx = -1;
+    for (var i = 0; i < ANCHORS.length; i++) { if (now < ANCHORS[i].t) { next = ANCHORS[i]; nextIdx = i; break; } }
+    var line = document.getElementById("bandLine"), det = document.getElementById("bandDetail");
     if (next) {
-      band.innerHTML = "⚓ 次の固定予定：" + next.label +
-        '<span class="sub">' + fmtRemain(next.t - now) + "（目安の残り時間）</span>";
+      var remain = fmtRemain(next.t - now);
+      line.textContent = "⚓ " + next.short + "（" + remain + "）";
+      var d = "次の固定予定：" + next.label + " ／ 残り時間：" + remain + "（目安）";
+      if (ANCHORS[nextIdx + 1]) d += "<br>その次：" + ANCHORS[nextIdx + 1].label;
+      det.innerHTML = d;
     } else {
-      band.textContent = "固定予定：11/14 13:45 海遊館入館 ／ 11/16 12:15 USJ発バス（全て終了）";
+      line.textContent = "⚓ 固定予定は全て終了しました";
+      det.textContent = "11/14 13:45 海遊館入館 ／ 11/16 12:15 USJ発リムジンバス は終了済みです。";
     }
   }
   updateBand();
   setInterval(updateBand, 60000);
+  document.getElementById("anchorBand").addEventListener("click", function () {
+    this.classList.toggle("open");
+  });
 
   /* ===== 地点データ（座標: OpenStreetMap Nominatim で取得 2026-11-13） ===== */
-  var TRIP = "#0b4f6c";
   var PLACES = [
     // 旅程
     { lat: 34.7839847, lon: 135.4390407, emoji: "✈️", name: "伊丹空港（大阪国際空港）", detour: false,
@@ -194,7 +235,6 @@
   ];
 
   var map = L.map("map", { zoomControl: false });
-  L.control.zoom({ position: "bottomleft" }).addTo(map);
   var tileOk = false;
   var tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -205,6 +245,10 @@
   setTimeout(function () {
     if (!tileOk) document.getElementById("tilenote").style.display = "block";
   }, 8000);
+
+  // 地図を操作している間は固定UI群を半透明にする
+  map.on("movestart zoomstart", function () { document.body.classList.add("fading"); });
+  map.on("moveend zoomend", function () { document.body.classList.remove("fading"); });
 
   // 子どもが喜ぶピン（娘=キラキラ・工作／息子=働く車・昆虫・船 に合うもの）
   var KIDS_MATCH = ["ユニバーサル・スタジオ・ジャパン", "海遊館", "天保山マーケットプレース",
@@ -257,13 +301,24 @@
   ).addTo(map);
   ferry.bindPopup("⛴️ キャプテンライン 片道10分（ユニバーサルシティポート ⇔ 海遊館西はとば）");
 
+  /* ===== メニュー（全体／おまかせ／絞り込み／戻る） ===== */
+  var menuPanel = document.getElementById("menuPanel");
+  function closeMenu() { menuPanel.classList.remove("open"); }
+  document.getElementById("btnMenu").addEventListener("click", function (e) {
+    e.stopPropagation();
+    menuPanel.classList.toggle("open");
+  });
+  menuPanel.addEventListener("click", function (e) { e.stopPropagation(); });
+  document.addEventListener("click", function () { closeMenu(); });
+
   var allBounds = L.latLngBounds(PLACES.map(function (p) { return [p.lat, p.lon]; }));
   function showAll() { map.fitBounds(allBounds.pad(0.06)); }
   showAll();
-  document.getElementById("btnAll").addEventListener("click", showAll);
+  document.getElementById("btnAll").addEventListener("click", function () { closeMenu(); showAll(); });
 
   // 🎲 おまかせ（寄り道から完全ランダム）
   document.getElementById("btnDice").addEventListener("click", function () {
+    closeMenu();
     var m = detourMarkers[Math.floor(Math.random() * detourMarkers.length)];
     map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 15), { duration: 0.9 });
     map.once("moveend", function () { m.openPopup(); });
@@ -295,7 +350,7 @@
     }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
   });
 
-  /* ===== カテゴリ絞り込みチップ ===== */
+  /* ===== カテゴリ絞り込み（メニュー内・選んだら閉じる） ===== */
   document.getElementById("chips").addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
     var f = b.getAttribute("data-f");
@@ -306,6 +361,7 @@
       if (show) { if (!map.hasLayer(m)) m.addTo(map); }
       else if (map.hasLayer(m)) map.removeLayer(m);
     });
+    closeMenu();
   });
 
   /* ===== トースト ===== */
@@ -317,7 +373,7 @@
     toastTimer = setTimeout(function () { t.style.display = "none"; }, 2600);
   }
 
-  /* ===== 現在地から近い順リスト ===== */
+  /* ===== 現在地から近い順リスト（一時表示・左上の小パネル） ===== */
   function showNear(ll) {
     var sorted = markers.map(function (m) {
       return { m: m, km: ll.distanceTo(m.getLatLng()) / 1000 };
@@ -388,17 +444,17 @@
     return "";
   }
   var KNOWN = [
-    { a: ["itami"], b: ["hotel", "usj", "ucstation"], icon: "🚌",
+    { a: ["itami"], b: ["hotel", "usj", "ucstation"], icon: "🚌", short: "40分",
       text: "<b>リムジンバス 約40分</b>・大人1,100円・予約不要（伊丹空港⇔USJ方面）" },
-    { a: ["ucport"], b: ["kaiyukan"], icon: "⛴️",
+    { a: ["ucport"], b: ["kaiyukan"], icon: "⛴️", short: "船10分",
       text: "<b>キャプテンライン 約10分</b>（船・ユニバーサルシティポート⇔海遊館西はとば）" },
-    { a: ["ucstation"], b: ["kaiyukan"], icon: "🚃",
+    { a: ["ucstation"], b: ["kaiyukan"], icon: "🚃", short: "25分",
       text: "<b>電車 約25分</b>（JRゆめ咲線→環状線→地下鉄中央線、西九条・弁天町で乗換、海遊館の最寄りは大阪港駅）" },
-    { a: ["hotel", "usj", "ucstation"], b: ["namba"], icon: "🚃",
+    { a: ["hotel", "usj", "ucstation"], b: ["namba"], icon: "🚃", short: "30分",
       text: "<b>電車 約30分</b>（USJ方面⇔なんば・道頓堀・心斎橋）" },
-    { a: ["kaiyukan"], b: ["namba"], icon: "🚇",
+    { a: ["kaiyukan"], b: ["namba"], icon: "🚇", short: "20分",
       text: "<b>地下鉄 約20分</b>（中央線・御堂筋線、海遊館⇔なんば・道頓堀）" },
-    { a: ["kaiyukan"], b: ["osakastation"], icon: "🚃",
+    { a: ["kaiyukan"], b: ["osakastation"], icon: "🚃", short: "30分",
       text: "<b>電車 約30分</b>（海遊館⇔大阪駅・梅田）" }
   ];
   function knownTransit(a, b) {
@@ -419,6 +475,11 @@
     if (m < 60) return "約" + m + "分";
     return "約" + Math.floor(m / 60) + "時間" + (m % 60 ? (m % 60) + "分" : "");
   }
+  function fmtDurShort(sec) {
+    var m = Math.round(sec / 60);
+    if (m < 60) return m + "分";
+    return Math.floor(m / 60) + "時間" + (m % 60 ? (m % 60) + "分" : "");
+  }
   function clearRouteLines() {
     if (footLine) { map.removeLayer(footLine); footLine = null; }
     if (carLine) { map.removeLayer(carLine); carLine = null; }
@@ -430,6 +491,20 @@
     if (which === "car" && carLine) carLine.bringToFront();
     sheet.querySelectorAll(".rrow.tap").forEach(function (r) {
       r.classList.toggle("active", r.getAttribute("data-mode") === which);
+    });
+  }
+  // ルート全体が、現在のシート高さ（折り畳み/展開）とアンカー帯に隠れず見えるようフィット
+  function fitRoute() {
+    var pts = [];
+    if (footLine) pts = pts.concat(footLine.getLatLngs());
+    if (carLine) pts = pts.concat(carLine.getLatLngs());
+    if (!pts.length && routeFrom && routeTo) pts = [routeFrom.latlng, routeTo.latlng];
+    if (!pts.length) return;
+    var topPad = document.getElementById("anchorBand").offsetHeight + 10;
+    var botPad = (sheet.classList.contains("open") ? sheet.offsetHeight : 0) + 14;
+    map.fitBounds(L.latLngBounds(pts).pad(0.04), {
+      paddingTopLeft: [10, topPad],
+      paddingBottomRight: [10, botPad]
     });
   }
   function osrm(profile, a, b) {
@@ -445,62 +520,83 @@
     return '<div class="rrow' + (mode ? " tap" : "") + '"' + (mode ? ' data-mode="' + mode + '"' : "") + ">" +
       '<span class="ic">' + icon + '</span><span class="tx">' + inner + "</span></div>";
   }
+  function setSummary(txt) {
+    document.getElementById("routeSummaryText").textContent = txt;
+  }
   function openRoute() {
     var a = routeFrom, b = routeTo;
     clearRouteLines();
+    sheet.classList.remove("expanded");
+    document.getElementById("routeChev").textContent = "詳細 ▸";
     document.getElementById("routeTitle").innerHTML = a.label + " → " + b.label;
     var body = document.getElementById("routeBody");
     var straight = a.latlng.distanceTo(b.latlng);
-    body.innerHTML = rowHTML("📏", "直線距離 <b>" + fmtKm(straight) + "</b>") +
-      '<div class="rrow"><span class="ic">⏳</span><span class="tx">計算中…</span></div>';
+    body.innerHTML = "";
+    setSummary("⏳ 計算中…");
     sheet.classList.add("open");
 
     var known = knownTransit(a, b);
-    var transitRow;
+    var transitRow, transitShort;
     if (known) {
       transitRow = rowHTML(known.icon, known.text + "（検証済みの実情報）");
+      transitShort = known.icon + " " + known.short;
     } else {
       var estMin = Math.round((straight / 1000) / 15 * 60 + 15);
       transitRow = rowHTML("🚃", "<b>電車・バス " + fmtDur(estMin * 60) + "</b>（直線距離からの粗い推定） <span class='est'>目安</span>");
+      transitShort = "🚃 " + estMin + "分";
     }
 
     var footDone = osrm("foot", a, b).then(function (r) {
       footLine = L.polyline(r.geometry.coordinates.map(function (c) { return [c[1], c[0]]; }),
         { color: "#2e7d32", weight: 5, opacity: 0.95 }).addTo(map);
       // OSRM foot の所要時間は実勢と合わないことがあるため、距離から徒歩速度4.2km/hで換算する
-      return rowHTML("🚶", "<b>徒歩 " + fmtDur(r.distance / 1000 / 4.2 * 3600) + "</b>・" + fmtKm(r.distance) + "（道なり）", "foot");
+      var sec = r.distance / 1000 / 4.2 * 3600;
+      return { row: rowHTML("🚶", "<b>徒歩 " + fmtDur(sec) + "</b>・" + fmtKm(r.distance) + "（道なり）", "foot"),
+               sum: "🚶 " + fmtDurShort(sec) };
     }).catch(function () {
       var d = straight * 1.3;
-      return rowHTML("🚶", "<b>徒歩 " + fmtDur(d / 1000 / 4.2 * 3600) + "</b>・約" + fmtKm(d) + "（直線からの推定） <span class='est'>推定</span>", "foot");
+      var sec = d / 1000 / 4.2 * 3600;
+      return { row: rowHTML("🚶", "<b>徒歩 " + fmtDur(sec) + "</b>・約" + fmtKm(d) + "（直線からの推定） <span class='est'>推定</span>", "foot"),
+               sum: "🚶 " + fmtDurShort(sec) };
     });
     var carDone = osrm("driving", a, b).then(function (r) {
       carLine = L.polyline(r.geometry.coordinates.map(function (c) { return [c[1], c[0]]; }),
         { color: "#e67e22", weight: 5, opacity: 0.95 }).addTo(map);
       var fare = Math.round((680 + 415 * (r.distance / 1000)) / 10) * 10;
-      return rowHTML("🚕", "<b>車・タクシー " + fmtDur(r.duration) + "</b>・" + fmtKm(r.distance) +
-        "（道なり）／タクシー料金 約" + fare.toLocaleString() + "円 <span class='est'>目安</span>", "car");
+      return { row: rowHTML("🚕", "<b>車・タクシー " + fmtDur(r.duration) + "</b>・" + fmtKm(r.distance) +
+                 "（道なり）／タクシー料金 約" + fare.toLocaleString() + "円 <span class='est'>目安</span>", "car"),
+               sum: "🚕 " + fmtDurShort(r.duration) };
     }).catch(function () {
       var d = straight * 1.35;
       var fare = Math.round((680 + 415 * (d / 1000)) / 10) * 10;
-      return rowHTML("🚕", "<b>車・タクシー " + fmtDur(d / 1000 / 25 * 3600) + "</b>・約" + fmtKm(d) +
-        "（直線からの推定）／タクシー料金 約" + fare.toLocaleString() + "円 <span class='est'>推定・目安</span>", "car");
+      var sec = d / 1000 / 25 * 3600;
+      return { row: rowHTML("🚕", "<b>車・タクシー " + fmtDur(sec) + "</b>・約" + fmtKm(d) +
+                 "（直線からの推定）／タクシー料金 約" + fare.toLocaleString() + "円 <span class='est'>推定・目安</span>", "car"),
+               sum: "🚕 " + fmtDurShort(sec) };
     });
 
-    Promise.all([footDone, carDone]).then(function (rows) {
-      body.innerHTML = rowHTML("📏", "直線距離 <b>" + fmtKm(straight) + "</b>") + rows[0] + rows[1] + transitRow +
+    Promise.all([footDone, carDone]).then(function (res) {
+      body.innerHTML = rowHTML("📏", "直線距離 <b>" + fmtKm(straight) + "</b>") + res[0].row + res[1].row + transitRow +
         '<div class="rrow"><span class="ic">💡</span><span class="tx" style="font-size:12px;color:#5a6d75">徒歩（緑）／車（オレンジ）の行をタップすると、そのルート線だけ濃く表示します</span></div>';
+      setSummary(res[0].sum + " ｜ " + res[1].sum + " ｜ " + transitShort);
       body.querySelectorAll(".rrow.tap").forEach(function (r) {
         r.addEventListener("click", function () { showLine(r.getAttribute("data-mode")); });
       });
-      var pts = [];
-      if (footLine) pts = pts.concat(footLine.getLatLngs());
-      if (carLine) pts = pts.concat(carLine.getLatLngs());
-      if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.08));
+      fitRoute();
       showLine("foot");
     });
   }
+  // サマリ行タップで詳細を開閉（開閉したら線が隠れないよう再フィット）
+  document.getElementById("routeSummary").addEventListener("click", function (e) {
+    if (e.target.closest("#routeClose")) return;
+    var open = sheet.classList.toggle("expanded");
+    document.getElementById("routeChev").textContent = open ? "閉じる ▾" : "詳細 ▸";
+    setTimeout(fitRoute, 60);
+  });
   document.getElementById("routeClose").addEventListener("click", function () {
     sheet.classList.remove("open");
+    sheet.classList.remove("expanded");
+    document.getElementById("routeChev").textContent = "詳細 ▸";
     clearRouteLines();
     routeFrom = null; routeTo = null;
     refreshPopups();
