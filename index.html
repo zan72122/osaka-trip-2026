@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>大阪旅行 11/14–16</title>
+<meta name="description" content="2026年11月14日〜16日 大阪家族旅行の現地確認用ページ。全時刻表・前後便・原典リンク付き、オフライン対応。">
+<meta name="theme-color" content="#0b4f6c">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#f4f7f8; --card:#fff; --ink:#12242c; --sub:#5a6d75; --line:#dbe5e8;
+  --acc:#0b4f6c; --acc2:#e8f3f7; --warn:#b3261e; --warnbg:#fdecea;
+  --ok:#146c2e; --okbg:#e6f4ea; --amber:#8a5a00; --amberbg:#fdf3d7;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5}
+a{color:var(--acc)}
+header{position:sticky;top:0;z-index:20;background:var(--acc);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px}
+header .ttl{font-weight:700;font-size:17px;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:baseline}
+header .ttl small{font-weight:400;font-size:12px;opacity:.85}
+nav.days{display:flex;gap:6px;margin-top:8px}
+nav.days button{flex:1;appearance:none;border:0;border-radius:999px;padding:9px 0;font-size:16px;font-weight:700;background:rgba(255,255,255,.18);color:#fff}
+nav.days button[aria-selected="true"]{background:#fff;color:var(--acc)}
+nav.days button.sos{background:rgba(255,120,110,.35)}
+nav.days button.sos[aria-selected="true"]{background:#fff;color:var(--warn)}
+main{max-width:640px;margin:0 auto;padding:10px 10px 40px}
+section.day{display:none}
+section.day.active{display:block}
+.wx{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px}
+.wx .big{font-size:22px;font-weight:800;white-space:nowrap}
+.wx .d{font-size:13px;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px}
+.card .row{display:flex;gap:10px;align-items:flex-start}
+.time{font-size:21px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;line-height:1.25}
+.time small{display:block;font-size:12px;font-weight:600;color:var(--sub)}
+.card h2{font-size:17px;margin:0 0 2px;line-height:1.35}
+.card p{margin:2px 0;font-size:14px}
+.card .sub{color:var(--sub);font-size:13px}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;vertical-align:2px;margin-left:6px}
+.tag.fix{background:var(--okbg);color:var(--ok)}
+.tag.warn{background:var(--warnbg);color:var(--warn)}
+.tag.chk{background:var(--amberbg);color:var(--amber)}
+details{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+details summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--acc);list-style:none;padding:4px 0}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋ "}
+details[open ] summary::before{content:"－ "}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;margin:6px 0}
+th,td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--sub)}
+tr.me{background:var(--acc2);font-weight:700}
+tr.me td:first-child::after{content:" ★"}
+ul{margin:6px 0;padding-left:20px;font-size:14px}
+li{margin:3px 0}
+.src{font-size:12px;color:var(--sub);margin-top:8px}
+.src a{margin-right:10px}
+.call{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.call:last-child{border-bottom:0}
+.call .n{font-weight:700}
+.call .d{font-size:13px;color:var(--sub)}
+.call a.tel{flex:none;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;border-radius:999px;padding:9px 14px;font-size:15px;font-variant-numeric:tabular-nums}
+.call a.tel.red{background:var(--warn)}
+.note{background:var(--amberbg);border-radius:10px;padding:9px 11px;font-size:14px;margin:8px 0}
+.alert{background:var(--warnbg);border-radius:10px;padding:9px 11px;font-size:14px;margin:8px 0}
+.good{background:var(--okbg);border-radius:10px;padding:9px 11px;font-size:14px;margin:8px 0}
+.foot{font-size:12px;color:var(--sub);text-align:center;margin-top:16px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px;margin:6px 0}
+.kv dt{color:var(--sub)} .kv dd{margin:0;font-weight:600}
+.off{font-size:12px;color:var(--sub);text-align:center;margin:6px 0 10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="ttl">大阪旅行 <small>2026/11/14(土)–16(月) ・ 家族4人</small></div>
+  <nav class="days" role="tablist">
+    <button role="tab" data-day="d14" aria-selected="true">14 土</button>
+    <button role="tab" data-day="d15" aria-selected="false">15 日</button>
+    <button role="tab" data-day="d16" aria-selected="false">16 月</button>
+    <button role="tab" data-day="sos" aria-selected="false" class="sos">SOS</button>
+  </nav>
+</header>
+<main>
+<p class="off">一度開けばオフラインでも全内容が見られます（原典リンクのみ通信が必要）。情報は2026-11-13確認。</p>
+
+<!-- ================= 11/14 ================= -->
+<section class="day active" id="d14">
+  <div class="wx"><div class="big">☁️ 21°/13°</div><div class="d">曇・降水30%。崩れるのは夜から。昼の屋外は無事な日。<br>海遊館 9:30–20:00 ／ 宿：ホテル近鉄ユニバーサル・シティ</div></div>
+
+  <div class="card">
+    <div class="row"><div class="time">7:30<small>那覇発</small></div>
+      <div><h2>ANA NH760 → 伊丹 9:30着<span class="tag fix">購入済</span></h2>
+      <p class="sub">この日、那覇→伊丹の始発が本命。遅延・欠航でも同日5本の後続あり。</p></div></div>
+    <details><summary>那覇→伊丹 当日全便（振替判断用）</summary>
+      <table>
+        <tr><th>便</th><th>那覇発</th><th>伊丹着</th></tr>
+        <tr class="me"><td>NH760</td><td>7:30</td><td>9:30</td></tr>
+        <tr><td>NH762</td><td>11:20</td><td>13:15</td></tr>
+        <tr><td>NH764</td><td>12:55</td><td>14:50</td></tr>
+        <tr><td>NH766</td><td>15:05</td><td>17:00</td></tr>
+        <tr><td>NH1274</td><td>16:55</td><td>18:55</td></tr>
+        <tr><td>NH770</td><td>17:55</td><td>19:50</td></tr>
+      </table>
+      <p class="sub">NH1274／NH770は日替わり時刻の便あり。当日はANA運航状況で最終確認。</p>
+    </details>
+    <p class="src">原典 <a href="https://www.ana.co.jp/ja/jp/guide/plan/airinfo/dom-timetable/" target="_blank" rel="noopener">ANA時刻表</a><a href="https://www.ana.co.jp/ja/jp/" target="_blank" rel="noopener">運航状況（ANAトップ）</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">9:55<small>伊丹発</small></div>
+      <div><h2>リムジンバス → USJ 10:35着</h2>
+      <p>中央ブロック <b>1番のりば</b>／約40分／大人1,100円・小児550円／予約なし先着順・券売機で買ってから乗車</p></div></div>
+    <details><summary>前後のバス全便（数時間の遅延時も）</summary>
+      <table>
+        <tr><th>伊丹発</th><th>USJ着</th><th></th></tr>
+        <tr><td>9:00</td><td>9:40</td><td></td></tr>
+        <tr><td>9:25</td><td>10:05</td><td></td></tr>
+        <tr class="me"><td>9:55</td><td>10:35</td><td>本命</td></tr>
+        <tr><td>10:55</td><td>11:35</td><td></td></tr>
+        <tr><td>11:20</td><td>12:00</td><td></td></tr>
+        <tr><td>11:45</td><td>12:25</td><td></td></tr>
+        <tr><td>12:45</td><td>13:25</td><td></td></tr>
+        <tr><td>13:35</td><td>14:15</td><td>13時台はこの1本</td></tr>
+        <tr><td>14:20</td><td>15:00</td><td></td></tr>
+        <tr><td>14:50</td><td>15:30</td><td></td></tr>
+        <tr><td>15:10</td><td>15:50</td><td>15時台はこの1本</td></tr>
+        <tr><td>16:20</td><td>17:00</td><td></td></tr>
+        <tr><td>17:00</td><td>17:40</td><td>最終</td></tr>
+      </table>
+    </details>
+    <details><summary>バスが使えない時の代替</summary>
+      <ul>
+        <li><b>タクシー</b>：伊丹→USJ 約30–40分。MK空港定額 5,000円/台（高速代別）、一般メーター目安 約7,000円〜</li>
+        <li><b>電車</b>：大阪モノレール 大阪空港→蛍池 → 阪急→大阪梅田 → JR大阪→ユニバーサルシティ。約50–60分・約640円・乗換3回</li>
+        <li><b>電車で海遊館へ直行</b>：梅田→Metro御堂筋線→本町→中央線→大阪港駅（徒歩5分）。伊丹から約65分・約860円</li>
+      </ul>
+    </details>
+    <p class="src">原典 <a href="https://www.hankyu-kankobus.co.jp/limousine/timetable/J/" target="_blank" rel="noopener">阪急観光バス USJ線時刻表</a><a href="https://www.hankyu-kankobus.co.jp/limousine/busstop/itm/" target="_blank" rel="noopener">伊丹のりば案内</a><a href="https://www.mk-group.co.jp/airport/images/200729fare_usj.pdf" target="_blank" rel="noopener">MK定額料金表</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">10:35<small>USJ着</small></div>
+      <div><h2>ホテル近鉄ユニバーサル・シティ</h2>
+      <p class="sub">USJゲートまで徒歩約1分。チェックイン15:00、<b>荷物は先に預けられる</b>。まず荷物を預けて身軽に船へ。</p></div></div>
+    <dl class="kv">
+      <dt>住所</dt><dd>大阪市此花区島屋6-2-68</dd>
+      <dt>電話</dt><dd><a href="tel:+81664656000">06-6465-6000</a></dd>
+      <dt>朝食</dt><dd>イーポック 6:30–10:00（最終入店9:30）</dd>
+    </dl>
+    <p class="src">原典 <a href="https://www.miyakohotels.ne.jp/hotel-kintetsu/" target="_blank" rel="noopener">ホテル公式</a><a href="https://www.miyakohotels.ne.jp/hotel-kintetsu/stay/breakfast/" target="_blank" rel="noopener">朝食案内</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">11:15<small>港発</small></div>
+      <div><h2>キャプテンライン → 海遊館（10分）</h2>
+      <p class="sub">ユニバーサルシティポートはホテルから徒歩約8分。<b>12時台は運休</b>。多客時は出港10分前に受付終了。</p></div></div>
+    <details><summary>11/14 当日ダイヤ（両方向）</summary>
+      <table>
+        <tr><th>ユニバーサルシティ発</th><th>海遊館西はとば発</th></tr>
+        <tr><td>9:15</td><td>9:30</td></tr>
+        <tr><td>9:45</td><td>10:00</td></tr>
+        <tr><td>10:15</td><td>10:30</td></tr>
+        <tr><td>10:45</td><td>11:00</td></tr>
+        <tr class="me"><td>11:15</td><td>11:30</td></tr>
+        <tr><td>11:45</td><td>—</td></tr>
+        <tr><td colspan="2">12時台 運休</td></tr>
+        <tr><td>13:15</td><td>13:00</td></tr>
+        <tr><td>14:15</td><td>14:00</td></tr>
+        <tr><td>15:15</td><td>15:00</td></tr>
+        <tr><td>16:15</td><td>16:00</td></tr>
+        <tr><td>17:15（最終）</td><td>17:00</td></tr>
+        <tr><td>—</td><td>18:00（最終）</td></tr>
+      </table>
+      <ul>
+        <li>片道（通常）大人900円・小学生500円・幼児400円／往復 大人1,700円・小学生900円・幼児700円</li>
+        <li>特別料金の日は片道 大人1,100円・小学生600円・幼児500円。11/14が通常か特別かは公式カレンダーの色分けで当日券売所確認</li>
+        <li><b>2歳は大人1人につき1人無料</b>。家族の目安：大人2＋5歳の往復</li>
+        <li>乗船券の提示特典：大観覧車100円OFF、ホテル近鉄「イーポック」ディナー10%OFF</li>
+      </ul>
+    </details>
+    <p class="src">原典 <a href="https://www.mmjp.or.jp/Capt-Line/capt/timetable/timetable2611.html" target="_blank" rel="noopener">11月ダイヤ</a><a href="https://www.mmjp.or.jp/Capt-Line/capt/ticket.html" target="_blank" rel="noopener">料金</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">11:30<small>目安</small></div>
+      <div><h2>天保山アニパ（マーケットプレース3F）</h2>
+      <p>11:00–19:30（最終受付18:30）／土日祝 大人1,500円・小人（4歳〜）1,000円・3歳以下無料 → 家族4,000円</p>
+      <p class="sub">海遊館入館前に約1時間。海遊館・観覧車の半券で割引あり。昼食もマーケットプレースで入館前に済ませる（再入館不可のため）。</p></div></div>
+    <p class="src">原典 <a href="https://tenpozan-anipa.com/" target="_blank" rel="noopener">天保山アニパ公式</a><a href="https://www.kaiyukan.com/thv/marketplace/" target="_blank" rel="noopener">マーケットプレース</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">13:15<small>入館枠</small></div>
+      <div><h2>海遊館<span class="tag warn">再入館不可</span></h2>
+      <p>9:30–20:00／大人2,800円・幼児700円・2歳以下無料 → 家族6,300円（11/14料金）</p>
+      <p class="sub">食事・トイレ・買い物は入館前に。館内ベビーカー貸出なし（置き場は入口近く）。見学目安 約2時間。</p></div></div>
+    <div class="note">お食事タイムの連鎖：<b>ジンベエザメ 15:00</b>（毎日10:30／15:00・公式確認済）。カワウソ・ペンギン等は月替わりで当日変動 → 当日、公式ページか館内で確認。</div>
+    <details><summary>11/14だけのもの・館内のコツ</summary>
+      <ul>
+        <li><b>アユモドキ期間展示（11/4–11/23）</b>：エントランスビル4F・飼育員カウンター。本館順路とは別場所。土日祝の飼育員解説は <b>11:00／13:10／15:30</b>、クイズ＋枚数限定ステッカー。13:10回は入館直前、15:30回は館内から出られない点に注意（4Fは入館前エリア）</li>
+        <li>11/8開始：北極圏で採集した生きものの追加展示、海遊館初のシロワニ展示</li>
+        <li>「太平洋」水槽の最初の角は全員が止まって混む。同じ水槽は先で何度も見られるので先へ進むのが公式推奨</li>
+        <li>17:00から照明・音楽が「夜の海遊館」に切替。閉館までいれば1枚で昼と夜の両方が見られる（観覧車の夕日と天秤）</li>
+        <li>入館券は捨てない：マーケットプレース各店のクーポン特典あり。紙の券は2枚つなげると絵が完成する</li>
+        <li>すたんぷノート400円（エントランスビル3Fショップ、館内11か所）</li>
+      </ul>
+    </details>
+    <details><summary>遅れた・枠を逃した時</summary>
+      <ul>
+        <li>eチケットはWebketマイページで<b>同価格帯・2回まで日時変更可</b>、クレジット決済なら<b>当日までキャンセル無料</b></li>
+        <li>指定時間に遅れても入館ゲートで入れる場合あり（その時間の予約者が優先で待つことあり）</li>
+        <li>なにわ食いしんぼ横丁はリニューアル休業中（2026年9月〜2027年3月、一部店舗除く）— 昼食の当てにしない</li>
+      </ul>
+    </details>
+    <p class="src">原典 <a href="https://www.kaiyukan.com/info/ticket/kaiyukan/" target="_blank" rel="noopener">入館料・eチケット</a><a href="https://www.kaiyukan.com/program/feedingtime/" target="_blank" rel="noopener">お食事タイム</a><a href="https://www.kaiyukan.com/about/news/20582.html" target="_blank" rel="noopener">アユモドキ展示</a><a href="https://www.kaiyukan.com/about/news/20564.html" target="_blank" rel="noopener">再入館終了のお知らせ</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">16:30<small>目安</small></div>
+      <div><h2>天保山大観覧車 → 船で帰港</h2>
+      <p>土曜 10:00–22:00／1周約15分／3歳以上1,000円・2歳無料。日の入り16:54</p>
+      <p class="sub">帰りの船：海遊館西はとば発 17:00 または最終18:00（片道10分）。ライトアップは「翌日」の天気予報を表示 — 晴=太陽／曇=雲／雨=傘。今夜見れば明日のUSJの天気が読める。</p></div></div>
+    <details><summary>おかわり船：天保山渡船（無料・3分）</summary>
+      <p class="sub">大阪市営の無料渡し船。築港⇔桜島、土日は昼間おおむね毎時00分・30分発（築港側発 6:30–20:30）。3分なので船酔いの心配なし。麓では天保山（標高4.53m・階段8段）に登頂でき、商店会の店で買い物をすると無料の登頂証明書。</p>
+    </details>
+    <p class="src">原典 <a href="https://www.city.osaka.lg.jp/kensetsu/page/0000011278.html" target="_blank" rel="noopener">大阪市・渡船時刻表</a></p>
+  </div>
+
+  <div class="card">
+    <h2>数時間遅れた日の組み直し</h2>
+    <ul>
+      <li>伊丹13時台着 → バス13:35発でUSJ 14:15。アニパは捨て、海遊館の枠をWebketで15時台へ変更して直行</li>
+      <li>伊丹15時台着 → バス15:10／16:20。海遊館は17:00以降の「夜の海遊館」だけでも成立（20:00閉館）。船は帰り最終18:00に注意、ダメなら電車（大阪港→本町→梅田→JR）かタクシー</li>
+      <li>海遊館自体を諦める場合：eチケットは当日までキャンセル無料（クレジット決済時）</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 11/15 ================= -->
+<section class="day" id="d15">
+  <div class="wx"><div class="big">🌧 18°/15°</div><div class="d">雨。ピークは午前（降水90%・昼前にかけて本降り）、午後は弱まり夕方には止む方向。雷を伴う可能性あり。<br>大きめの傘＋全員分のレインウェア＋ベビーカーカバー＋替え靴下。</div></div>
+
+  <div class="card">
+    <div class="row"><div class="time">6:30<small>朝食</small></div>
+      <div><h2>イーポック 朝食ブッフェ ～10:00</h2>
+      <p class="sub">最終入店9:30・予約不可。大人3,300円・小学生1,650円・4歳〜未就学990円（朝食付きプラン）。別会場：大戸屋（5F）6:45–10:00。</p></div></div>
+    <p class="src">原典 <a href="https://www.miyakohotels.ne.jp/hotel-kintetsu/stay/breakfast/" target="_blank" rel="noopener">ホテル朝食案内</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">8:30<small>開園</small></div>
+      <div><h2>USJ 8:30–22:00<span class="tag fix">パス購入済</span></h2>
+      <p class="sub">ホテルから徒歩約1分。公式アプリへスタジオ・パス3人分登録済（息子は3歳未満でパス不要）。開園時刻より早く入場開始する場合あり。この週末は混雑見込み（公式お知らせ）。</p></div></div>
+    <div class="alert">入園直後の順番：<b>①ベビーカーレンタル → ②ニンテンドーのe整理券</b>。どちらも後になるほど不利。</div>
+    <details><summary>① ベビーカーレンタル</summary>
+      <ul>
+        <li>エントランス入って<b>右側</b>「車イス・ベビーカーレンタル」</li>
+        <li>1台1,100円、リクライニング付き、対象 生後1ヶ月〜48ヶ月</li>
+        <li>予約不可・台数限りあり → 入場直後が正解。列の中は妻持参の抱っこ紐、外はベビーカーの分担</li>
+      </ul>
+    </details>
+    <details><summary>② スーパー・ニンテンドー・ワールド e整理券</summary>
+      <ul>
+        <li>2026年1月から整理券／抽選券は<b>公式アプリのみ</b>（発券所は終了）</li>
+        <li>手順：パーク入場後 → アプリ「e整理券」→ エリア／アトラクション選択 → 登録済みの入場券を選択 → 希望時間をタップ → 取得</li>
+        <li>パーク内でしか取得できない。全員分をまとめて取る</li>
+        <li>アプリを消すと取得済み整理券も無効になるので注意</li>
+      </ul>
+    </details>
+    <p class="src">原典 <a href="https://www.usj.co.jp/web/ja/jp/park-guide/schedule/park-hour2" target="_blank" rel="noopener">営業時間</a><a href="https://www.usj.co.jp/web/ja/jp/enjoy/numbered-ticket" target="_blank" rel="noopener">e整理券</a><a href="https://www.usj.co.jp/web/ja/jp/service-guide/children" target="_blank" rel="noopener">お子さま連れ案内</a></p>
+  </div>
+
+  <div class="card">
+    <h2>身長で乗れる・乗れない</h2>
+    <details><summary>娘 105cm</summary>
+      <ul>
+        <li>✅ ミニオン・ハチャメチャ・ライド（102cm〜・付き添い）</li>
+        <li>✅ スペース・ファンタジー・ザ・ライド（102cm〜・付き添い）</li>
+        <li>✅ ヨッシー・アドベンチャー、ヒッポグリフ、ミニオン・アイス、フライング・スヌーピー（92cm〜・付き添い）</li>
+        <li>✅ 制限なし系すべて</li>
+        <li>❌ <b>マリオカート／ドンキーコングのトロッコ（107cm）— あと2cm</b>。当日ゲートで測られるので期待させない</li>
+        <li>❌ ジュラシック・パーク（107cm）、122cm・132cm区分すべて</li>
+      </ul>
+    </details>
+    <details><summary>息子 89cm</summary>
+      <ul>
+        <li>乗れるのは<b>身長制限なし系のみ</b>：ミニオン・ハチャメチャ・ミッション、ハローキティのカップケーキ・ドリーム、名探偵コナン 4-D ライブ・ショー、ジョーズ</li>
+        <li>ただし「一人で座って姿勢を保てること」が条件のものあり — ジョーズは一人座り条件に注意</li>
+        <li>❌ ヨッシーを含む92cm以上のすべて</li>
+        <li>交代で乗る時は「チャイルドスイッチ」（1回分の待ちで交代利用可）</li>
+      </ul>
+    </details>
+    <p class="src">原典 <a href="https://www.usj.co.jp/web/ja/jp/attractions/requirements/height-restriction" target="_blank" rel="noopener">USJ身長制限（公式）</a><a href="https://www.usj.co.jp/web/ja/jp/attractions/how-to-fun/child-switch" target="_blank" rel="noopener">チャイルドスイッチ</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">14:00<small>約40分</small></div>
+      <div><h2>NO LIMIT! パレード<span class="tag chk">雨で中止あり</span></h2>
+      <p class="sub">息子の昼寝（14:00–15:00）と重なる時間。ベビーカーで寝たまま観る前提で場所取りを。雨が残れば中止・変更の可能性 → 当日「本日のパーク情報」で確認。</p></div></div>
+    <p class="src">原典 <a href="https://www.usj.co.jp/web/ja/jp/25th-anniversary-discover-u/parade" target="_blank" rel="noopener">パレード公式</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">14:45<small>受付開始</small></div>
+      <div><h2>復路NH767のオンラインチェックイン</h2>
+      <p class="sub">11/16 14:45発のチェックインはこの時刻から。SAIDOの前、休憩のついでに済ませると明日が楽。</p></div></div>
+    <p class="src">原典 <a href="https://www.ana.co.jp/ja/jp/guide/boarding-procedures/checkin/online-checkin/" target="_blank" rel="noopener">ANAオンラインチェックイン</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">16:00<small>予約</small></div>
+      <div><h2>SAIDO（彩道）<span class="tag fix">優先案内予約済</span></h2>
+      <p>ニューヨーク・エリアの和食レストラン。当日営業 10:30–20:00</p>
+      <p class="sub">お子様御膳1,200円（手巻き寿司・和風ハンバーグ・ミニうどん・プリン）。低アレルゲンメニューあり。</p></div></div>
+    <p class="src">原典 <a href="https://www.usj.co.jp/web/ja/jp/restaurants/saido" target="_blank" rel="noopener">SAIDO公式</a><a href="https://www.usj.co.jp/web/ja/jp/restaurants/kids-menu" target="_blank" rel="noopener">キッズメニュー</a></p>
+  </div>
+
+  <div class="card">
+    <h2>雨の日の組み立て</h2>
+    <ul>
+      <li>軸は屋内：ミニオン系、コナン4-D、ワンダーランド屋内、SAIDOで長めの休憩</li>
+      <li>屋外アトラクション・パレードは天候で休止／中止があり得る。前倒しで「晴れ間（午後〜夕方）」に屋外を寄せる</li>
+      <li>ホテルが徒歩1分 — びしょ濡れになったら一度戻って着替える手が使える（再入場は当日のルールをゲートで確認）</li>
+      <li>持ち物：レインコート／ポンチョ（大人・子ども）、ベビーカーカバー、替え靴下・タオル、防水ポーチ</li>
+    </ul>
+    <p class="src">原典 <a href="https://www.usj.co.jp/web/ja/jp/attractions/show-and-attraction-schedule" target="_blank" rel="noopener">本日のパーク情報</a></p>
+  </div>
+</section>
+
+<!-- ================= 11/16 ================= -->
+<section class="day" id="d16">
+  <div class="wx"><div class="big">🌤 20°/15°</div><div class="d">晴れのち曇・降水20%。回復する日。<br>チェックアウト11:00 ／ 復路 NH767 14:45発</div></div>
+
+  <div class="card">
+    <div class="row"><div class="time">11:00<small>CO</small></div>
+      <div><h2>チェックアウト → 荷物はフロントへ</h2>
+      <p class="sub">預けたままシティウォークで昼食・お土産。バスに乗る前に受け取る。</p></div></div>
+    <dl class="kv">
+      <dt>シティウォーク</dt><dd>3F 10:00–22:00／レストラン 11:00–23:00</dd>
+      <dt>ホテル電話</dt><dd><a href="tel:+81664656000">06-6465-6000</a></dd>
+    </dl>
+    <p class="src">原典 <a href="https://ucw.jp/about/" target="_blank" rel="noopener">シティウォーク公式</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">12:15<small>USJ発</small></div>
+      <div><h2>リムジンバス → 伊丹北 13:00着</h2>
+      <p>交通広場 <b>3番のりば</b>／約40分／大人1,100円・小児550円／予約なし先着順・券はのりば係員から</p>
+      <p class="sub">ANAは<b>北ターミナル</b>。13:00着で14:45発に余裕あり。</p></div></div>
+    <div class="alert">NH767に間に合うバスは <b>13:00発が実質最終</b>（伊丹南13:40着）。次の14:30発は間に合わない。</div>
+    <details><summary>当日のバス全便</summary>
+      <table>
+        <tr><th>USJ発</th><th>伊丹南</th><th>伊丹北</th></tr>
+        <tr><td>9:50</td><td>10:30</td><td>10:35</td></tr>
+        <tr><td>10:10</td><td>10:50</td><td>10:55</td></tr>
+        <tr><td>10:45</td><td>11:25</td><td>11:30</td></tr>
+        <tr><td>11:20</td><td>12:00</td><td>12:05</td></tr>
+        <tr><td>11:45</td><td>12:25</td><td>12:30</td></tr>
+        <tr class="me"><td>12:15</td><td>12:55</td><td>13:00</td></tr>
+        <tr><td>13:00</td><td>13:40</td><td>13:45</td></tr>
+        <tr><td>14:30</td><td>15:10</td><td>15:15</td></tr>
+        <tr><td>15:00</td><td>15:40</td><td>15:45</td></tr>
+        <tr><td>15:40</td><td>16:20</td><td>16:25</td></tr>
+        <tr><td>16:00</td><td>16:40</td><td>16:45</td></tr>
+        <tr><td>16:20</td><td>17:00</td><td>17:05</td></tr>
+        <tr><td>17:00</td><td>17:40</td><td>17:45</td></tr>
+        <tr><td>18:00</td><td>18:40</td><td>18:45</td></tr>
+      </table>
+    </details>
+    <details><summary>バスを逃した時</summary>
+      <ul>
+        <li><b>タクシー</b>：USJ→伊丹 約30–40分。MK定額5,000円/台（高速代別）の対象区間</li>
+        <li><b>電車</b>：JRユニバーサルシティ→大阪（12–15分・200円、日中7–15分間隔）→阪急梅田→蛍池→モノレール→大阪空港。約60分。始発5:09／最終0:02</li>
+      </ul>
+    </details>
+    <p class="src">原典 <a href="https://www.hankyu-kankobus.co.jp/limousine/timetable/J/" target="_blank" rel="noopener">阪急観光バス USJ線時刻表</a><a href="https://www.hankyu-kankobus.co.jp/limousine/busstop/12345/" target="_blank" rel="noopener">USJのりば案内</a></p>
+  </div>
+
+  <div class="card">
+    <div class="row"><div class="time">14:45<small>伊丹発</small></div>
+      <div><h2>ANA NH767 → 那覇 17:00着<span class="tag fix">購入済</span></h2>
+      <p class="sub">チェックインは前日11/15 14:45から受付済のはず。保安検査は余裕を持って。</p></div></div>
+    <details><summary>伊丹→那覇 当日全便</summary>
+      <table>
+        <tr><th>便</th><th>伊丹発</th><th>那覇着</th></tr>
+        <tr><td>NH761</td><td>8:15</td><td>10:30</td></tr>
+        <tr><td>NH763</td><td>9:45</td><td>12:00</td></tr>
+        <tr><td>NH765</td><td>12:00</td><td>14:15</td></tr>
+        <tr><td>NH1273</td><td>13:45</td><td>16:05</td></tr>
+        <tr class="me"><td>NH767</td><td>14:45</td><td>17:00</td></tr>
+        <tr><td>NH769</td><td>18:50</td><td>21:10</td></tr>
+      </table>
+      <p class="sub">本命を逃した場合の同日後続はNH769（18:50発）のみ。前倒しはNH1273（13:45発、伊丹到着が早ければ）。</p>
+    </details>
+    <p class="src">原典 <a href="https://www.ana.co.jp/ja/jp/guide/plan/airinfo/dom-timetable/" target="_blank" rel="noopener">ANA時刻表</a></p>
+  </div>
+</section>
+
+<!-- ================= SOS ================= -->
+<section class="day" id="sos">
+  <div class="card">
+    <h2>電話（タップで発信）</h2>
+    <div class="call"><div><div class="n">ホテル近鉄ユニバーサル・シティ</div><div class="d">代表・24時間の宿の連絡先</div></div><a class="tel" href="tel:+81664656000">06-6465-6000</a></div>
+    <div class="call"><div><div class="n">ANA 国内線予約・案内</div><div class="d">8:00–20:00・年中無休／振替・欠航時</div></div><a class="tel" href="tel:0570029222">0570-029-222</a></div>
+    <div class="call"><div><div class="n">USJ インフォメーション</div><div class="d">9:00–17:00（自動音声24時間）</div></div><a class="tel" href="tel:0570200606">0570-20-0606</a></div>
+    <div class="call"><div><div class="n">海遊館</div><div class="d">開館時刻〜19:00</div></div><a class="tel" href="tel:+81665765501">06-6576-5501</a></div>
+    <div class="call"><div><div class="n">伊丹空港 総合案内</div><div class="d">6:30–21:30／遺失物は 06-6856-6685</div></div><a class="tel" href="tel:+81668566781">06-6856-6781</a></div>
+    <div class="call"><div><div class="n">大阪MKタクシー</div><div class="d">24時間／空港定額の相談も</div></div><a class="tel" href="tel:+81671784441">06-7178-4441</a></div>
+  </div>
+
+  <div class="card">
+    <h2>子どもの体調・緊急</h2>
+    <div class="call"><div><div class="n">小児救急電話相談 #8000</div><div class="d">大阪府 19:00–翌8:00・365日。ダイヤル回線は 06-6765-3650</div></div><a class="tel" href="tel:%238000">#8000</a></div>
+    <div class="call"><div><div class="n">救急安心センター #7119</div><div class="d">24時間・大人も可。番号が使えない時は 06-6582-7119</div></div><a class="tel" href="tel:%237119">#7119</a></div>
+    <div class="call"><div><div class="n">救急・消防</div><div class="d">明らかに緊急の時はこちら</div></div><a class="tel red" href="tel:119">119</a></div>
+    <div class="call"><div><div class="n">警察</div><div class="d"></div></div><a class="tel red" href="tel:110">110</a></div>
+    <p class="src">原典 <a href="https://www.pref.osaka.lg.jp/o100030/iryo/syouni-qq/syouni_qq_tel.html" target="_blank" rel="noopener">大阪府・小児救急電話相談</a><a href="https://www.pref.osaka.lg.jp/o100030/iryo/qq/osaka-qq-navi.html" target="_blank" rel="noopener">救急安心センターおおさか</a></p>
+  </div>
+
+  <div class="card">
+    <h2>困った時の手順</h2>
+    <ul>
+      <li><b>飛行機が欠航・大幅遅延</b>：ANAアプリ／空港カウンターで同日後続へ振替（14日は後続5本、16日は後続NH769のみ）。取れなければANA 0570-029-222</li>
+      <li><b>バスが満席・遅延</b>：次便表（各日のカード内）→ ダメならタクシー定額 → 電車ルートの順</li>
+      <li><b>船が運休（天候）</b>：海遊館へは電車（大阪港駅）でも行ける。USJ側へ戻るのも同じ</li>
+      <li><b>チケットの枠を逃した</b>：海遊館eチケットはWebketで当日変更・キャンセル可。まずマイページを開く</li>
+      <li><b>忘れ物</b>：伊丹空港 遺失物 06-6856-6685／USJはインフォメーション／ホテルは代表へ</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>住所メモ（タクシー・道案内用）</h2>
+    <dl class="kv">
+      <dt>ホテル／USJ</dt><dd>大阪市此花区島屋6-2-68（ホテル近鉄ユニバーサル・シティ）</dd>
+      <dt>海遊館</dt><dd>大阪市港区海岸通1-1-10</dd>
+      <dt>伊丹空港</dt><dd>大阪国際空港（ANAは南ターミナル到着／北ターミナル出発）</dd>
+    </dl>
+  </div>
+</section>
+
+<p class="foot">出典は各カードの「原典」リンク。運航・営業は天候等で変わります。オンラインの時に原典で最終確認を。<br>作成 2026-11-13</p>
+</main>
+<script>
+(function(){
+  var tabs=document.querySelectorAll('nav.days button');
+  function show(id){
+    tabs.forEach(function(b){b.setAttribute('aria-selected', b.dataset.day===id?'true':'false')});
+    document.querySelectorAll('section.day').forEach(function(s){s.classList.toggle('active', s.id===id)});
+    window.scrollTo(0,0);
+    try{localStorage.setItem('osaka-day',id)}catch(e){}
+  }
+  tabs.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.day)})});
+  // 日付に合ったタブを初期表示（旅行中はその日が開く）
+  var now=new Date(), init='d14';
+  if(now.getFullYear()===2026 && now.getMonth()===10){
+    if(now.getDate()===15) init='d15';
+    else if(now.getDate()>=16) init='d16';
+  } else {
+    try{var saved=localStorage.getItem('osaka-day'); if(saved) init=saved;}catch(e){}
+  }
+  show(init);
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
+  }
+})();
+</script>
+</body>
+</html>

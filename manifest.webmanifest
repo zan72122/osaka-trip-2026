@@ -1,0 +1,14 @@
+{
+  "name": "大阪旅行 11/14–16",
+  "short_name": "大阪旅行",
+  "description": "2026年11月14日〜16日 大阪家族旅行の現地確認用ページ（オフライン対応）",
+  "lang": "ja",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7f8",
+  "theme_color": "#0b4f6c",
+  "icons": [
+    {"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}

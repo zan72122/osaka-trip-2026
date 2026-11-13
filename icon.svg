@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0b4f6c"/>
+  <text x="256" y="225" font-family="sans-serif" font-size="104" font-weight="bold" fill="#ffffff" text-anchor="middle">OSAKA</text>
+  <text x="256" y="320" font-family="sans-serif" font-size="60" font-weight="bold" fill="#b4e1f0" text-anchor="middle">11/14-16</text>
+  <line x1="77" y1="389" x2="435" y2="389" stroke="#ffffff" stroke-width="10"/>
+  <line x1="77" y1="426" x2="435" y2="426" stroke="#8cc8dc" stroke-width="10"/>
+</svg>
