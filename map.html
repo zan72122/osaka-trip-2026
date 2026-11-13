@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>地図｜大阪旅行 11/14–16</title>
+<meta name="description" content="大阪旅行の地図。旅程の地点と寄り道候補を現在地と見比べられます（地図はオンライン専用）。">
+<meta name="theme-color" content="#0b4f6c">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
+  #map{position:fixed;inset:0;background:#e8eef0}
+  .band{position:fixed;top:0;left:0;right:0;z-index:1200;background:#0b4f6c;color:#fff;
+    font-size:13px;font-weight:700;line-height:1.35;padding:calc(env(safe-area-inset-top) + 6px) 10px 6px;text-align:center;
+    box-shadow:0 1px 6px rgba(0,0,0,.25)}
+  .band .sub{display:block;font-size:11px;font-weight:400;opacity:.85}
+  .backlink{position:fixed;left:10px;top:calc(env(safe-area-inset-top) + 52px);z-index:1200;
+    background:rgba(255,255,255,.94);color:#0b4f6c;text-decoration:none;font-size:13px;font-weight:700;
+    border-radius:999px;padding:7px 12px;box-shadow:0 1px 5px rgba(0,0,0,.3)}
+  .btns{position:fixed;right:10px;bottom:calc(env(safe-area-inset-bottom) + 16px);z-index:1200;display:flex;flex-direction:column;gap:8px}
+  .btns button{appearance:none;border:0;border-radius:999px;padding:9px 14px;font-size:14px;font-weight:700;
+    background:rgba(255,255,255,.94);color:#0b4f6c;box-shadow:0 1px 5px rgba(0,0,0,.3);cursor:pointer;text-align:left}
+  .btns button:active{background:#dcebf1}
+  .pin{width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);
+    display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1;background:#0b4f6c}
+  .pin.detour{background:#8a97a0}
+  .pin.anchor{box-shadow:0 0 0 3px #f2b705,0 1px 5px rgba(0,0,0,.45)}
+  .mydot{width:18px;height:18px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 2px rgba(26,115,232,.5)}
+  .leaflet-popup-content{font-size:14px;line-height:1.5;margin:12px 14px}
+  .leaflet-popup-content .nm{font-weight:800;font-size:15px}
+  .leaflet-popup-content .memo{color:#333}
+  .leaflet-popup-content .tip{color:#5a6d75;font-size:13px}
+  .leaflet-popup-content .dist{color:#0b4f6c;font-weight:700;font-size:13px}
+  #fallback{display:none;position:fixed;inset:0;z-index:1300;background:#f4f7f8;color:#12242c;
+    padding:80px 24px 24px;text-align:center;font-size:15px;line-height:1.7}
+  #fallback a{color:#0b4f6c;font-weight:700}
+  #tilenote{display:none;position:fixed;left:10px;bottom:calc(env(safe-area-inset-bottom) + 16px);z-index:1200;max-width:62vw;
+    background:rgba(255,244,214,.96);color:#664d03;font-size:12px;border-radius:10px;padding:8px 10px;box-shadow:0 1px 5px rgba(0,0,0,.25)}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="band" id="anchorBand">固定予定：11/14 13:45 海遊館入館 ／ 11/16 12:15 USJ発バス</div>
+<a class="backlink" href="./index.html">← 旅行サイトへ戻る</a>
+<div class="btns">
+  <button id="btnDice" type="button">🎲 おまかせ</button>
+  <button id="btnLoc" type="button">📍 現在地</button>
+  <button id="btnAll" type="button">🗺 全体</button>
+</div>
+<div id="tilenote">地図タイルを読み込めませんでした。地図はオンライン専用です。</div>
+
+<div id="fallback">
+  <p style="font-size:34px;margin:0">🗺</p>
+  <p><b>地図はオンライン専用です。</b><br>地図の読み込みに失敗しました（オフライン等）。<br>本体の情報はオフラインでも読めます。</p>
+  <p><a href="./index.html">← 旅行サイトへ戻る</a></p>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+  "use strict";
+  if (typeof L === "undefined") {
+    document.getElementById("fallback").style.display = "block";
+    return;
+  }
+
+  /* ===== 固定アンカー帯 ===== */
+  var ANCHORS = [
+    { t: new Date(2026, 10, 14, 13, 45), label: "11/14 13:45 海遊館入館" },
+    { t: new Date(2026, 10, 16, 12, 15), label: "11/16 12:15 USJ発リムジンバス（13:00発が最終の安全圏）" }
+  ];
+  function fmtRemain(ms) {
+    var m = Math.max(0, Math.round(ms / 60000));
+    var d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60;
+    if (d > 0) return "あと" + d + "日" + h + "時間";
+    if (h > 0) return "あと" + h + "時間" + mm + "分";
+    return "あと" + mm + "分";
+  }
+  function updateBand() {
+    var now = new Date(), band = document.getElementById("anchorBand"), next = null;
+    for (var i = 0; i < ANCHORS.length; i++) { if (now < ANCHORS[i].t) { next = ANCHORS[i]; break; } }
+    if (next) {
+      band.innerHTML = "⚓ 次の固定予定：" + next.label +
+        '<span class="sub">' + fmtRemain(next.t - now) + "（目安の残り時間）</span>";
+    } else {
+      band.textContent = "固定予定：11/14 13:45 海遊館入館 ／ 11/16 12:15 USJ発バス（全て終了）";
+    }
+  }
+  updateBand();
+  setInterval(updateBand, 60000);
+
+  /* ===== 地点データ（座標: OpenStreetMap Nominatim で取得 2026-11-13） ===== */
+  var TRIP = "#0b4f6c";
+  var PLACES = [
+    // 旅程
+    { lat: 34.7839847, lon: 135.4390407, emoji: "✈️", name: "伊丹空港（大阪国際空港）", detour: false,
+      memo: "リムジンバスでUSJまで約40分・大人1,100円（予約不要）。" },
+    { lat: 34.6678181, lon: 135.4385746, emoji: "🚉", name: "ユニバーサルシティ駅", detour: false,
+      memo: "JRゆめ咲線。大阪駅から約15分。ホテル・USJの最寄り駅。" },
+    { lat: 34.6684653, lon: 135.4371821, emoji: "🏨", name: "ホテル近鉄ユニバーサル・シティ", detour: false,
+      memo: "USJゲートまで徒歩約1分。チェックイン15:00（荷物預けは先に可）。" },
+    { lat: 34.6656393, lon: 135.4324527, emoji: "🎢", name: "ユニバーサル・スタジオ・ジャパン", detour: false,
+      memo: "11/15 8:30–22:00。SAIDO（彩道）16:00 優先案内予約済み。" },
+    { lat: 34.6651277, lon: 135.4384316, emoji: "⛴️", name: "ユニバーサルシティポート", detour: false,
+      memo: "キャプテンラインのりば。海遊館まで片道10分のシャトル船。" },
+    { lat: 34.6551600, lon: 135.4293909, emoji: "🐠", name: "海遊館", detour: false, anchor: true,
+      memo: "11/14 13:45入館（eチケット購入済み）・再入館不可。ジンベエザメお食事タイム15:00。" },
+    { lat: 34.6559737, lon: 135.4303047, emoji: "🛍️", name: "天保山マーケットプレース", detour: false,
+      memo: "昼食とお土産はここで入館前に。天保山アニパは3F。",
+      tip: "海遊館まで徒歩約3分。13:45入館には13:40頃出ればOK（目安）。" },
+    { lat: 34.6561990, lon: 135.4309731, emoji: "🎡", name: "天保山大観覧車", detour: false,
+      memo: "1周約15分・海遊館のすぐ隣。土曜は10:00–22:00。",
+      tip: "13:45入館には13:30頃までに乗り終わればOK（目安）。" },
+    // 寄り道
+    { lat: 34.6561606, lon: 135.4304468, emoji: "🧱", name: "レゴランド・ディスカバリー・センター大阪", detour: true,
+      memo: "天保山マーケットプレース内の屋内レゴ施設。",
+      tip: "滞在1〜2時間（目安）。工作好きの娘に。息子もデュプロで遊べる。13:45入館には13:35頃出ればOK（目安・同施設内から徒歩数分）。" },
+    { lat: 34.6871828, lon: 135.5253958, emoji: "🏯", name: "大阪城", detour: true,
+      memo: "大阪のシンボル。広い公園と天守閣。",
+      tip: "滞在1〜2時間（目安）。家族みんなで散策に。" },
+    { lat: 34.7052927, lon: 135.4905349, emoji: "🏙️", name: "梅田スカイビル", detour: true,
+      memo: "空中庭園展望台のある超高層ビル。",
+      tip: "滞在約1時間（目安）。夕景・夜景は大人が喜ぶ。" },
+    { lat: 34.7019048, lon: 135.4944259, emoji: "🚃", name: "大阪駅", detour: true,
+      memo: "梅田の中心。JRでユニバーサルシティ駅まで約15分。",
+      tip: "滞在30分〜（目安）。駅ビルで買い物・スイーツ（妻向け）。" },
+    { lat: 34.6525393, lon: 135.5063098, emoji: "🗼", name: "通天閣", detour: true,
+      memo: "新世界のシンボルタワー。",
+      tip: "滞在約1時間（目安）。新世界の串カツとセットで。" },
+    { lat: 34.6689260, lon: 135.5010546, emoji: "🦀", name: "道頓堀（グリコサイン）", detour: true,
+      memo: "グリコサイン前の戎橋。食い倒れの街。",
+      tip: "滞在1〜2時間（目安）。たこ焼き・スイーツは妻と娘に。夕方の寄り道に。" },
+    { lat: 34.6745173, lon: 135.5003566, emoji: "🏬", name: "心斎橋", detour: true,
+      memo: "道頓堀から続くショッピング街。",
+      tip: "滞在1〜2時間（目安）。妻のチョコ・スイーツ探しにも。夕方の寄り道に。" },
+    { lat: 34.6661565, lon: 135.5002710, emoji: "🚇", name: "なんば駅周辺", detour: true,
+      memo: "ミナミの交通ハブ。食事・お土産が集まる。",
+      tip: "滞在30分〜1時間（目安）。乗り換えついでの食事・お土産に。" },
+    { lat: 34.6457685, lon: 135.5140068, emoji: "🏙️", name: "あべのハルカス", detour: true,
+      memo: "高さ300mの超高層ビルと展望台「ハルカス300」。",
+      tip: "滞在約1時間（目安）。通天閣と近いのでセットでも。" }
+  ];
+
+  var map = L.map("map", { zoomControl: false });
+  L.control.zoom({ position: "bottomleft" }).addTo(map);
+  var tileOk = false;
+  var tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors"
+  });
+  tiles.on("tileload", function () { tileOk = true; });
+  tiles.addTo(map);
+  setTimeout(function () {
+    if (!tileOk) document.getElementById("tilenote").style.display = "block";
+  }, 8000);
+
+  var myLatLng = null;
+  function popupHTML(p) {
+    var h = '<div class="nm">' + p.emoji + " " + p.name + "</div>" +
+            '<div class="memo">' + p.memo + "</div>";
+    if (p.tip) h += '<div class="tip">' + p.tip + "</div>";
+    if (myLatLng) {
+      var km = myLatLng.distanceTo(L.latLng(p.lat, p.lon)) / 1000;
+      h += '<div class="dist">現在地から直線で約 ' + km.toFixed(1) + " km</div>";
+    }
+    return h;
+  }
+  var markers = [], detourMarkers = [];
+  PLACES.forEach(function (p) {
+    var icon = L.divIcon({
+      className: "",
+      html: '<div class="pin' + (p.detour ? " detour" : "") + (p.anchor ? " anchor" : "") + '">' + p.emoji + "</div>",
+      iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -16]
+    });
+    var m = L.marker([p.lat, p.lon], { icon: icon }).addTo(map);
+    m._place = p;
+    m.bindPopup(function () { return popupHTML(p); });
+    markers.push(m);
+    if (p.detour) detourMarkers.push(m);
+  });
+  function refreshPopups() {
+    markers.forEach(function (m) { if (m.getPopup()) m.setPopupContent(popupHTML(m._place)); });
+  }
+
+  // キャプテンライン航路（海遊館側の終点は海遊館の座標で代用）
+  var ferry = L.polyline(
+    [[34.6651277, 135.4384316], [34.6551600, 135.4293909]],
+    { color: "#1a73e8", weight: 3, dashArray: "8 6" }
+  ).addTo(map);
+  ferry.bindPopup("⛴️ キャプテンライン 片道10分（ユニバーサルシティポート ⇔ 海遊館西はとば）");
+
+  var allBounds = L.latLngBounds(PLACES.map(function (p) { return [p.lat, p.lon]; }));
+  function showAll() { map.fitBounds(allBounds.pad(0.06)); }
+  showAll();
+  document.getElementById("btnAll").addEventListener("click", showAll);
+
+  // 🎲 おまかせ（寄り道から完全ランダム）
+  document.getElementById("btnDice").addEventListener("click", function () {
+    var m = detourMarkers[Math.floor(Math.random() * detourMarkers.length)];
+    map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 15), { duration: 0.9 });
+    map.once("moveend", function () { m.openPopup(); });
+  });
+
+  // 現在地
+  var myMarker = null, myCircle = null;
+  document.getElementById("btnLoc").addEventListener("click", function () {
+    if (!navigator.geolocation) { alert("この端末では現在地が使えません"); return; }
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var ll = L.latLng(pos.coords.latitude, pos.coords.longitude);
+      myLatLng = ll;
+      var dot = L.divIcon({ className: "", html: '<div class="mydot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
+      if (!myMarker) {
+        myMarker = L.marker(ll, { icon: dot, zIndexOffset: 1000 }).addTo(map).bindPopup("現在地");
+        myCircle = L.circle(ll, { radius: pos.coords.accuracy || 30, color: "#1a73e8", weight: 1, fillOpacity: 0.12 }).addTo(map);
+      } else {
+        myMarker.setLatLng(ll);
+        myCircle.setLatLng(ll);
+        myCircle.setRadius(pos.coords.accuracy || 30);
+      }
+      refreshPopups();
+      map.flyTo(ll, Math.max(map.getZoom(), 15), { duration: 0.9 });
+    }, function () {
+      alert("現在地を取得できませんでした（位置情報の許可を確認してください）");
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("./sw.js").catch(function () {}); });
+  }
+})();
+</script>
+</body>
+</html>
