@@ -602,6 +602,37 @@
     refreshPopups();
   });
 
+  // ===== URLパラメータで2地点ルートを自動表示（ map.html?a=<ピン名>&b=<ピン名> ） =====
+  // 照合順：ピンの name と完全一致 → 略称 → 前方一致（1件のみ） → 部分一致（1件のみ）。
+  // どちらか一方でも解決できない・同じ地点の場合は何もせず通常表示のままにする。
+  function resolvePinParam(q) {
+    if (!q) return null;
+    q = String(q).trim();
+    if (!q) return null;
+    var pt = pointFor(q);
+    if (pt) return pt;
+    var ALIAS = { "USJ": "ユニバーサル・スタジオ・ジャパン" };
+    if (ALIAS[q]) { pt = pointFor(ALIAS[q]); if (pt) return pt; }
+    var i, cand = [];
+    for (i = 0; i < PLACES.length; i++) { if (PLACES[i].name.indexOf(q) === 0) cand.push(PLACES[i]); }
+    if (cand.length === 1) return pointFor(cand[0].name);
+    cand = [];
+    for (i = 0; i < PLACES.length; i++) { if (PLACES[i].name.indexOf(q) >= 0) cand.push(PLACES[i]); }
+    if (cand.length === 1) return pointFor(cand[0].name);
+    return null;
+  }
+  (function () {
+    var params;
+    try { params = new URLSearchParams(location.search); } catch (e) { return; }
+    var pa = resolvePinParam(params.get("a"));
+    var pb = resolvePinParam(params.get("b"));
+    if (!pa || !pb || pa.key === pb.key) return;
+    routeFrom = pa; routeTo = pb;
+    refreshPopups();
+    if (document.readyState === "complete") openRoute();
+    else window.addEventListener("load", function () { openRoute(); });
+  })();
+
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () { navigator.serviceWorker.register("./sw.js").catch(function () {}); });
   }
