@@ -1,6 +1,6 @@
 // 大阪旅行ページ オフライン用 Service Worker
 // 方針: ページ本体は stale-while-revalidate（オンライン時は裏で最新化、オフライン時は保存版を表示）
-const CACHE = 'osaka-trip-2026-v2';
+const CACHE = 'osaka-trip-2026-v3';
 const CORE = ['./', './index.html', './sources.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {
